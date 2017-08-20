@@ -1,0 +1,27 @@
+{
+  "name": "bitchatter",
+  "version": "1.0.0",
+  "description": "Chat room",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lalrishav/bitChatter.git"
+  },
+  "author": "Lal Rishav",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lalrishav/bitChatter/issues"
+  },
+  "homepage": "https://github.com/lalrishav/bitChatter#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "ejs": "^2.5.7",
+    "express": "^4.15.4",
+    "express-session": "^1.15.5",
+    "path": "^0.12.7",
+    "socket.io": "^2.0.3"
+  }
+}
