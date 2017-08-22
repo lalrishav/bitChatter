@@ -1,0 +1,132 @@
+<% include header.ejs %>
+<% if(!user) { %>
+	<script type="text/javascript">
+		window.location = "/";
+	</script>
+<% } %>
+<head>
+	<title>Raw Chat</title>
+	<style type="text/css">
+		#configure{
+			margin-top: 20px;
+			background-color: black;
+			color: green;
+			padding: 20px;
+			
+		}
+		textarea{
+			height: 100px;
+		}
+	</style>
+	<script src="/socket/socket.io-client/dist/socket.io.js"></script>
+	<script type="text/javascript">
+		var socket = io.connect();
+		function emitUser(){
+			socket.emit('new user',"<%= user %>",function(data){
+
+			})
+		}
+		jQuery(function($){
+			$onlineUser = $('#onlineUser');
+			$rawMsg = $('#rawMsg');
+			$raw_msg_box = $('#raw_msg_box');
+			$configure = $('#configure');
+			socket.on('new msg',function(data){
+				$configure.append("<span style='color:blue'>" + data.user + ":-" + "</span>" + "<span style='color:red'>" + data.msg + "</span>" + "<br>")
+			})
+			$raw_msg_box.keypress(function (e) {
+				var key = e.which;
+				if(key == 13 ){
+					if(document.getElementById("enter").checked == true){
+						if($raw_msg_box.val()!='' && $raw_msg_box.val()!='@clear'){
+							$configure.append("<span style='color:blue'>You"  + ":-" + "</span>" + "<span style='color:lightgreen'>" + $raw_msg_box.val() + "</span>" + "<br>")
+							socket.emit('send-msg',$raw_msg_box.val());
+							$raw_msg_box.val('')
+						}
+						else if($raw_msg_box.val()=='@clear'){
+							document.getElementById("configure").innerHTML = ""
+							$raw_msg_box.val('')
+						}
+					}
+				}
+				
+				}); 
+
+			$rawMsg.submit(function(e){
+				e.preventDefault();
+				if($raw_msg_box.val()!='' && $raw_msg_box.val()!='@clear'){
+					$configure.append("<span style='color:blue'>You"  + ":-" + "</span>" + "<span style='color:lightgreen'>" + $raw_msg_box.val() + "</span>" + "<br>")
+					socket.emit('send-msg',$raw_msg_box.val());
+					$raw_msg_box.val('')
+				}
+				else if($raw_msg_box.val()=='@clear'){
+					document.getElementById("configure").innerHTML = ""
+						$raw_msg_box.val('')
+				}
+			})
+			setInterval(function(){
+				if($raw_msg_box.val()!=''){
+					document.getElementById("sendbtn").style.display = "block";
+				}
+				else{
+					document.getElementById("sendbtn").style.display = "none";
+				}
+			},1);
+
+			socket.on('usernames',function(data){
+					var data = Array.from(new Set(data))
+					var html = "";
+					for(var i=0;i<data.length;i++){
+						/*<button class="btn btn-primary">Lal Rishav</button>*/
+						html = html + "<button class='btn btn-primary'>" + data[i] + "</button>&nbsp&nbsp&nbsp"
+					}
+					$onlineUser.html(html)
+
+				})
+
+		})
+	</script>
+
+</head>
+<script type="text/javascript">
+	function toogle(){
+		
+		if(document.getElementById('content').text != "CLOSE"){
+			document.getElementById('content').text = "CLOSE";
+			document.getElementById('onlineUser').style.display="block"
+		}
+		else{
+			document.getElementById('content').text = "Online Users";
+			document.getElementById('onlineUser').style.display="none"
+		}
+		
+	}
+</script>
+
+<body onload="emitUser()">
+	
+
+<section>
+	<p>
+        <a href="#" class="btn btn-info btn-lg" onclick="toogle()" id="content">
+          <span class="glyphicon glyphicon-menu-hamburger"></span> Online Users
+        </a>
+     </p> 
+   <div class="row">
+   	<div class="col-md-12" id="onlineUser" style="background-color: lightgreen;height: 70px;padding: 10px;overflow-x: scroll;overflow-y:hidden;white-space: nowrap;display: none">
+   	</div>
+   	
+   </div>
+  <div class="mt-2 col-md-12" id="configure" >	
+  </div>
+  <div class="col-md-12">
+  <br>
+  	<form id="rawMsg">
+        <textarea  placeholder="This is a raw chat!!!Nothing is logged here!!!!Just keep in mind that this is not trusted you may lose your data in this chat" class="form-control" id="raw_msg_box">
+        </textarea><br>
+        <input type="submit" value="Send" style="display: none" id="sendbtn">
+        <input type="checkbox" id="enter">&nbsp&nbsp<b style="color: black">Send message on enter</b>
+    </form>
+    </div>
+</section>
+</body>

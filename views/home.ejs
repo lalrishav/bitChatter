@@ -14,14 +14,15 @@
 		<form id="send-msg">
 			<input type="text" id="msgbox"><br>
 			<input type="submit" id="send">
-		</form>
-		<div id="chat"></div>
-		<div id="users"></div>
+		</form><br><br>
+		
 		<form id="privateChat">
 			<input type="text" id="user" placeholder="enter the name of online user"><br><br>
 			<input type="text" id="msg" placeholder="enter the msg"><br><br>
 			<input type="submit">
-		</div>
+		</form>
+		<div id="chat">aa</div>
+		<div id="users"></div>
 </div>
 
 <script src="http://code.jquery.com/jquery-latest.min.js"
@@ -48,9 +49,21 @@
 			socket.emit('send-msg',$messagebox.val());
 			$messagebox.val('')
 		})
+		var $reqUser = $('#user')
+		var $msg = $('#msg')
+		var $privateChat = $('#privateChat')
+		$privateChat.submit(function(e){
+			e.preventDefault();
+			socket.emit('private-data',{user:$reqUser.val(),msg:$msg.val()})
+		})
+
 		socket.on('new msg',function(data){
 			$chat.append("<span style='color:blue'>" + data.user + ":-" + "</span>" + "<span style='color:red'>" + data.msg + "</span>" + "<br>")
 
+		})
+
+		socket.on('private-msg',function(data){
+			console.log("<%= user %>")
 		})
 		$users = $('#users');
 		socket.on('usernames',function(data){
@@ -60,7 +73,6 @@
 			for(var i=0;i<data.length;i++){
 				html = html + data[i] + "<br>"
 			}
-			console.log(html);
 			$users.html(html);
 		})
 	})

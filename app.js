@@ -43,6 +43,7 @@ app.get('/logout',function(req,res){
 	})
 })*/
 var currentUsers = [];
+var currentSockets = []
 function updateUserList(){
 	console.log(currentUsers);
 	io.sockets.emit('usernames',currentUsers);
@@ -50,20 +51,24 @@ function updateUserList(){
 
 io.sockets.on('connection',function(socket){
 	socket.on("new user",function(data,callback){
-		//if(currentUsers.indexOf(data)!=-1){
-		//	callback(false)
-		//}
-		//else{
 			callback(true);
 			socket.user = data;
 			currentUsers.push(socket.user);
-		//}
+			currentSockets.push(socket);
 			updateUserList();
 	})
 
 	socket.on('send-msg',function(data){
-		io.sockets.emit('new msg',{msg:data,user:socket.user});
-		//socket.broadcast.emit('new msg',data)
+		//io.sockets.emit('new msg',{msg:data,user:socket.user});
+		socket.broadcast.emit('new msg',{msg:data,user:socket.user})
+	})
+
+	socket.on('private-data',function(data){
+		//if(data.user in currentUsers){
+			console.log("---------------------")
+			currentSockets[currentUsers.indexOf(data.user)].emit('private-msg',data.msg);
+
+		//}
 	})
 
 	socket.on('disconnect',function(data){
@@ -71,6 +76,7 @@ io.sockets.on('connection',function(socket){
 		if(!socket.user)
 			return
 		currentUsers.splice(currentUsers.indexOf(socket.user),1)
+		currentSockets.splice(currentUsers.indexOf(socket.user),1)
 		updateUserList();
 
 	})
@@ -79,7 +85,7 @@ io.sockets.on('connection',function(socket){
 app.get('/home',function(req,res){
 	let pageInfo = {};
 	pageInfo.user = req.session.user;
-	res.render("home",pageInfo)
+	res.render("dashboard",pageInfo)
 })
 
 
