@@ -5,7 +5,7 @@
 <script type="text/javascript">
 	var socket = io.connect()
 	function emitUser(){
-		socket.emit('new user chatWith',{user:"<%=user.email %>",chatWith:"<%= friend %>"},function(data){
+		socket.emit('new user chatWith',{user:"<%=user.email %>",chatWith:"<%= friend %>",userId:"<%=user._id%>"},function(data){
 
 		})
 		$('#sidebar_secondary').addClass('popup-box-on');

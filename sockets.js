@@ -25,13 +25,68 @@ module.exports = function(server){
 		socket.on("new user chatWith",function(data,callback){
 				console.log("data user is " + data.user)
 				callback(true)
-				socket.user = data.user;
-				socket.type = "chatWith";
-				socket.chatWith = data.chatWith;
-				currentUsers.push(socket.user);
-				currentSockets.push(socket);
-				console.log(currentUsers)
-				updateUserList();
+				var items = [userModel]
+				async.each(items,function(item,callback){
+					item.findOne({"email":data.chatWith},function(err,data){
+						if(err)
+							throw err
+						else{
+							console.log(data)
+							callback({"recvId":data._id})
+						}
+					})
+				},function(found){
+					console.log("i am here")
+					var itemss = [messageModel]
+					async.each(itemss,function(item,callback){
+						var searchParam = {};
+						searchParam.senderId = data.userId
+						searchParam.recvId = found.recvId
+						item.find(searchParam,function(err,data){
+							if(err)
+								throw err
+							else{
+								console.log(data)
+								callback()
+							}
+						})
+					},function(){
+						console.log("successfull callback")
+						socket.user = data.user;
+						socket.type = "chatWith";
+						socket.chatWith = data.chatWith;
+						currentUsers.push(socket.user);
+						currentSockets.push(socket);
+						console.log(currentUsers)
+
+						updateUserList();
+					})
+				})
+				/*var items = [messageModel];
+				async.each(items,function(item,callback){
+					var searchParam = {};
+					searchParam.sendId = data.user
+					searchParam.recvId = data.chatWith
+					item.findOne(searchParam,function(err,data){
+						if(err)
+							throw err;
+						else{
+							console.log(data)
+							callback();
+						}
+					})
+				},function(){
+					console.log("successfull callback")
+					socket.user = data.user;
+					socket.type = "chatWith";
+					socket.chatWith = data.chatWith;
+					currentUsers.push(socket.user);
+					currentSockets.push(socket);
+					console.log(currentUsers)
+
+					updateUserList();
+				})*/
+				
 			})
 
 		socket.on('send-msg',function(data){
