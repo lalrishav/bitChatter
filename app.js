@@ -36,6 +36,14 @@ app.get('/logout',function(req,res){
 	res.redirect('/');
 })
 
+app.get('/chatWith',function(req,res){
+	var chatWith = req.query.user;
+	var pageInfo = {};
+	pageInfo.friend = chatWith;
+	pageInfo.user = req.session.user
+	res.render("privateChat",pageInfo);
+})
+
 /*io.on('connection',function(socket){
 	socket.emit('alert',"how r u")
 	socket.on("yo got",function(data){
@@ -45,18 +53,33 @@ app.get('/logout',function(req,res){
 var currentUsers = [];
 var currentSockets = []
 function updateUserList(){
-	console.log(currentUsers);
+	//console.log(currentUsers);
 	io.sockets.emit('usernames',currentUsers);
 }
 
 io.sockets.on('connection',function(socket){
-	socket.on("new user",function(data,callback){
+	socket.on("new user home",function(data,callback){
+			
 			callback(true);
 			socket.user = data;
+			socket.type = "home"
 			currentUsers.push(socket.user);
 			currentSockets.push(socket);
+			console.log(currentUsers)
 			updateUserList();
-	})
+		})
+
+	socket.on("new user chatWith",function(data,callback){
+			console.log("data user is " + data.user)
+			callback(true)
+			socket.user = data.user;
+			socket.type = "chatWith";
+			socket.chatWith = data.chatWith;
+			currentUsers.push(socket.user);
+			currentSockets.push(socket);
+			console.log(currentUsers)
+			updateUserList();
+		})
 
 	socket.on('send-msg',function(data){
 		//io.sockets.emit('new msg',{msg:data,user:socket.user});
@@ -65,8 +88,24 @@ io.sockets.on('connection',function(socket){
 
 	socket.on('private-data',function(data){
 		//if(data.user in currentUsers){
-			console.log("---------------------")
-			currentSockets[currentUsers.indexOf(data.user)].emit('private-msg',data.msg);
+			for(var i=0;i<currentUsers.length;i++){
+				if(currentUsers[i] == data.user){
+					if(currentSockets[i].type == "chatWith"){
+						if(currentSockets[i].chatWith == data.me){
+							currentSockets[i].emit("private-msg",data.msg)
+						}
+						else{
+							currentSockets[i].emit("alert msg","you have a new msg")
+						}
+					}
+					else{
+						currentSockets[i].emit("alert msg","you have a new msg")
+					}
+					/*currentSockets[i].emit('private-msg',data.msg);
+					console.log("hiiii");*/
+				}
+			}
+			
 
 		//}
 	})
@@ -75,8 +114,13 @@ io.sockets.on('connection',function(socket){
 		console.log("disconnecting.........")
 		if(!socket.user)
 			return
-		currentUsers.splice(currentUsers.indexOf(socket.user),1)
-		currentSockets.splice(currentUsers.indexOf(socket.user),1)
+		//console.log(socket)
+		var index = currentSockets.indexOf(socket);
+		//console.log(index)
+		currentUsers.splice(index,1)
+		currentSockets.splice(index,1)
+		//currentUsers.splice(currentUsers.indexOf(socket.user),1)
+		//currentSockets.splice(currentUsers.indexOf(socket.user),1)
 		updateUserList();
 
 	})

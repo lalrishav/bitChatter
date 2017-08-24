@@ -4,6 +4,7 @@
 		window.location = "/";
 	</script>
 <% } %>
+<h1>I am <%= user %></h1>
 <head>
 	<title>Raw Chat</title>
 	<style type="text/css">
@@ -18,11 +19,13 @@
 			height: 100px;
 		}
 	</style>
+	<link rel="stylesheet" href="/privatechat.css">
 	<script src="/socket/socket.io-client/dist/socket.io.js"></script>
+	<script src="/privatechat.js"></script>
 	<script type="text/javascript">
 		var socket = io.connect();
 		function emitUser(){
-			socket.emit('new user',"<%= user %>",function(data){
+			socket.emit('new user home',"<%= user %>",function(data){
 
 			})
 		}
@@ -48,6 +51,7 @@
 							$raw_msg_box.val('')
 						}
 					}
+
 				}
 				
 				}); 
@@ -78,11 +82,14 @@
 					var html = "";
 					for(var i=0;i<data.length;i++){
 						/*<button class="btn btn-primary">Lal Rishav</button>*/
-						html = html + "<button class='btn btn-primary'>" + data[i] + "</button>&nbsp&nbsp&nbsp"
+						html = html + "<button class='btn btn-primary' onclick=\"window.location='chatWith?user=" + data[i] + "'\">" + data[i] + "</button>&nbsp&nbsp&nbsp"
 					}
 					$onlineUser.html(html)
 
 				})
+			socket.on('alert msg',function(data){
+				console.log("alert is here");
+			})
 
 		})
 	</script>
@@ -129,4 +136,66 @@
     </form>
     </div>
 </section>
+<!---@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2-->
+
+<h1 id="addClass"><a href="/chatWith">Hello world</a></h1>
+
+
+<aside id="sidebar_secondary" class="tabbed_sidebar ng-scope chat_sidebar">
+
+<div class="popup-head">
+	<div class="popup-head-left pull-left">
+		<h1>LAL RISHAV</h1>
+	</div>
+	<div class="popup-head-right pull-right">
+		<button data-widget="remove" id="removeClass" class="chat-header-button pull-right" type="button"><i class="glyphicon glyphicon-remove"></i>
+		</button>
+    </div>
+</div>
+
+<div id="chat" class="chat_box_wrapper chat_box_small chat_box_active" style="opacity: 1; display: block; transform: translateX(0px);">
+    <div class="chat_box touchscroll chat_box_colors_a">
+        <div class="chat_message_wrapper">
+            <div class="chat_user_avatar">
+                <img src="http://www.webncc.in/images/gurdeeposahan.jpg" class="md-user-image">
+            </div>
+          	<ul class="chat_message">
+                <li>
+                    <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio, eum? 
+                    </p>
+                </li>
+                <li>
+                    <p> Lorem ipsum dolor sit amet.<span class="chat_message_time">13:38</span> </p>
+                </li>
+            </ul>
+        </div>
+        <div class="chat_message_wrapper chat_message_right">
+            <div class="chat_user_avatar">
+                <img  src="http://bootsnipp.com/img/avatars/bcf1c0d13e5500875fdd5a7e8ad9752ee16e7462.jpg" class="md-user-image">
+            </div>
+            <ul class="chat_message">
+                <li>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem delectus distinctio dolor earum est hic id impedit ipsum minima mollitia natus nulla perspiciatis quae quasi, quis recusandae, saepe, sunt totam.
+                        <span class="chat_message_time">13:34</span>
+                    </p>
+                </li>
+            </ul>
+        </div>
+                            
+    </div>
+</div>
+
+<div class="chat_submit_box">
+    <div class="uk-input-group">
+        <div class="gurdeep-chat-box">
+        <input type="text" placeholder="Type a message" id="submit_message" name="submit_message" class="md-input">
+        
+        </div>
+    
+    
+    </div>
+</div>
+        
+        </div>
 </body>
