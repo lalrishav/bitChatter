@@ -3,9 +3,10 @@ const passport      = require('passport'),
 const mongoose      = require('mongoose');
 mongoose.Promise    = require('bluebird');
 const User = mongoose.model('User');
+
 // expose this function to our app using module.exports
 module.exports = (passport) => {
-    
+
     // =========================================================================
     // passport session setup ==================================================
     // =========================================================================
@@ -14,7 +15,6 @@ module.exports = (passport) => {
 
     // used to serialize the user for the session
     passport.serializeUser((user, done) => {
-        console.log("hello")
         //console.log('serializing: ');
         //console.log(user);
         done(null, user._id);
@@ -44,38 +44,31 @@ module.exports = (passport) => {
         // asynchronous
         // User.findOne wont fire unless data is sent back
         process.nextTick(() => {
-            
+
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
         User.findOne({ 'email' :  email },(err, user) => {
             // if there are any errors, return the error
-             
+            
             if (err)
-                throw err
+                return done(err);
 
             // check to see if theres already a user with that email
             if (user) {
-                console.log("jjj")
                 return done(null, false, {'errorMessages': 'That email is already taken.'});
             } else {
 
                 // if there is no user with that email
                 // create the user
-               
                 let newUser            = new User();
 
                 // set the user's local credentials
-
-                console.log(req.body.user)
-                console.log(req.body.pass)
-                newUser.username       = req.body.user;
-
-                newUser.password       = newUser.generateHash(req.body.pass);
-                
+                newUser.email          = email;
+                newUser.password       = newUser.generateHash(password);
                 // save the user
                 newUser.save((err)=>{
                     if (err)
-                        throw err;
+                        return done(err);
                     return done(null, newUser);
                 });
             }
@@ -109,8 +102,9 @@ module.exports = (passport) => {
                 return done(err);
 
             // if no user is found, return the message
-            if (!user)
+            if (!user){
                 return done(null, false, req.flash('errorMessages', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
+            }
 
             // if the user is found but the password is wrong
             if (!user.validPassword(password))

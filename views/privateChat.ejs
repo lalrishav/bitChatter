@@ -5,7 +5,7 @@
 <script type="text/javascript">
 	var socket = io.connect()
 	function emitUser(){
-		socket.emit('new user chatWith',{user:"<%=user %>",chatWith:"<%= friend %>"},function(data){
+		socket.emit('new user chatWith',{user:"<%=user.email %>",chatWith:"<%= friend %>"},function(data){
 
 		})
 		$('#sidebar_secondary').addClass('popup-box-on');
@@ -24,7 +24,7 @@
 		$msg.keypress(function(e){
 			var key = e.which;
 			if(key == 13){
-				socket.emit("private-data",{msg:$msg.val(),user:"<%= friend %>",me:"<%= user %>"})
+				socket.emit("private-data",{msg:$msg.val(),user:"<%= friend %>",me:"<%= user.email %>",meId:"<%= user._id %>"})
 				$left.append("<div class='chat_message_wrapper' id='left'><div class='chat_user_avatar'><img src='http://www.webncc.in/images/gurdeeposahan.jpg' class='md-user-image'></div><ul class='chat_message'><li><p>" + $msg.val() + "</p></ul></div>")
 				$msg.val('')
 				var scroll = document.getElementById("chat");
