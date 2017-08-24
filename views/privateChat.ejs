@@ -1,5 +1,4 @@
 <% include header.ejs %>
-<h1>I am <%= user %></h1>
 <link rel="stylesheet" href="/privatechat.css">
 <script src="/socket/socket.io-client/dist/socket.io.js"></script>
 <script src="/privatechat.js"></script>
@@ -21,6 +20,7 @@
 		$right = $('#right')
 		$msg = $('#submit_message')
 		$chat = $('#chat')
+		$notification = $('#notification')
 		$msg.keypress(function(e){
 			var key = e.which;
 			if(key == 13){
@@ -43,7 +43,8 @@
 				scroll.scrollTop = scroll.scrollHeight;
 			})
 		socket.on('alert msg',function(data){
-				console.log("alert is here");
+			console.log("hello")
+				$notification.append("<a style='color:blue' href='/chatWith?user=" + data + "'>You have a new message frrom " + data + "!!!Plzzz checkout</a>")
 			})
 	})
 </script>
@@ -51,9 +52,10 @@
 
  <audio id="audio" src="/beep.mp3" autostart="false">
  </audio>
-
-<h1 id="addClass">Hello world</h1>
-
+<
+<div id = "notification" style="margin-top: 100px;">
+	
+</div>
 
 <aside id="sidebar_secondary" class="tabbed_sidebar ng-scope chat_sidebar">
 
@@ -68,44 +70,14 @@
 </div>
 
 <div id="chat" class="chat_box_wrapper chat_box_small chat_box_active" style="opacity: 1; display: block; transform: translateX(0px);">
-    <div class="chat_box touchscroll chat_box_colors_a" id="left">
-        <div class="chat_message_wrapper" >
-            <div class="chat_user_avatar">
-                <img src="http://www.webncc.in/images/gurdeeposahan.jpg" class="md-user-image">
-            </div>
-          	<ul class="chat_message" >
-                <li>
-                    <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio, eum? 
-                    </p>
-                </li>
-                <li>
-                    <p> Lorem ipsum dolor sit amet.<span class="chat_message_time">13:38</span> </p>
-                </li>
-            </ul>
-        </div>
-        <div class="chat_message_wrapper chat_message_right">
-            <div class="chat_user_avatar">
-                <img  src="http://bootsnipp.com/img/avatars/bcf1c0d13e5500875fdd5a7e8ad9752ee16e7462.jpg" class="md-user-image">
-            </div>
-            <ul class="chat_message" id="right">
-                <li>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem delectus distinctio dolor earum est hic id impedit ipsum minima mollitia natus nulla perspiciatis quae quasi, quis recusandae, saepe, sunt totam.
-                        <span class="chat_message_time">13:34</span>
-                    </p>
-                </li>
-            </ul>
-        </div>
-                            
+    <div class="chat_box touchscroll chat_box_colors_a" id="left">            
     </div>
 </div>
 
 <div class="chat_submit_box">
     <div class="uk-input-group">
         <div class="gurdeep-chat-box">
-        <input type="text" placeholder="Type a message" id="submit_message" name="submit_message" class="md-input">
-        
-        </div>
+        <textarea placeholder="Type a message" id="submit_message" name="submit_message" class="md-input" style="color: black"></textarea>
     
     
     </div>

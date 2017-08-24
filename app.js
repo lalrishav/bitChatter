@@ -95,11 +95,11 @@ io.sockets.on('connection',function(socket){
 							currentSockets[i].emit("private-msg",data.msg)
 						}
 						else{
-							currentSockets[i].emit("alert msg","you have a new msg")
+							currentSockets[i].emit("alert msg",data.me)
 						}
 					}
 					else{
-						currentSockets[i].emit("alert msg","you have a new msg")
+						currentSockets[i].emit("alert msg",data.me)
 					}
 					/*currentSockets[i].emit('private-msg',data.msg);
 					console.log("hiiii");*/
