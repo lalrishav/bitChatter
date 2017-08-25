@@ -36,10 +36,24 @@ module.exports = function(server){
 						}
 					})
 				},function(found){
-					console.log("i am here")
+
 					var itemss = [messageModel]
 					async.each(itemss,function(item,callback){
-						var searchParam = {};
+						item.find({
+							$or: [
+								{$and : [{"senderId":data.userId},{"recvId":found.recvId}]},
+								{$and : [{"senderId":found.recvId},{"recvId":data.userId}]}
+
+							]
+						},function(err,data){
+							if(err)
+								throw err
+							else{
+								console.log(data)
+								callback({"msg":data})
+							}
+						})
+						/*var searchParam = {};
 						searchParam.senderId = data.userId
 						searchParam.recvId = found.recvId
 						item.find(searchParam,function(err,data){
@@ -47,19 +61,40 @@ module.exports = function(server){
 								throw err
 							else{
 								console.log(data)
-								callback()
+								callback({"msg":data})
 							}
-						})
-					},function(){
+						})*/
+					},function(found){
+						console.log("--------------------------------")
+						console.log(found)
 						console.log("successfull callback")
+						var prevMsg = found.msg;
+						//emit the socket for this user
 						socket.user = data.user;
 						socket.type = "chatWith";
 						socket.chatWith = data.chatWith;
 						currentUsers.push(socket.user);
 						currentSockets.push(socket);
 						console.log(currentUsers)
-
 						updateUserList();
+						for(var i=0;i<currentUsers.length;i++){
+							if(currentUsers[i] == data.user){
+								if(currentSockets[i].type == "chatWith"){
+									if(currentSockets[i].chatWith == data.chatWith){
+										console.log("prev msg diplayed")
+										currentSockets[i].emit("prev private-msg",found.msg)
+									}
+									else{
+										console.log("ss")
+									}
+								}
+								else{
+									currentSockets[i].emit("alert msg",data.me)
+								}
+								/*currentSockets[i].emit('private-msg',data.msg);
+								console.log("hiiii");*/
+							}
+						}
 					})
 				})
 				/*var items = [messageModel];
