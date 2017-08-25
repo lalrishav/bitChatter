@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 var messageModel = mongoose.model('Message');
 const async = require('async')
 var userModel = mongoose.model("User");
+var notificationModel = mongoose.model("Notification")
 module.exports = function(server){
 	var currentUsers = [];
 	var currentSockets = []
@@ -97,30 +98,6 @@ module.exports = function(server){
 						}
 					})
 				})
-				/*var items = [messageModel];
-				async.each(items,function(item,callback){
-					var searchParam = {};
-					searchParam.sendId = data.user
-					searchParam.recvId = data.chatWith
-					item.findOne(searchParam,function(err,data){
-						if(err)
-							throw err;
-						else{
-							console.log(data)
-							callback();
-						}
-					})
-				},function(){
-					console.log("successfull callback")
-					socket.user = data.user;
-					socket.type = "chatWith";
-					socket.chatWith = data.chatWith;
-					currentUsers.push(socket.user);
-					currentSockets.push(socket);
-					console.log(currentUsers)
-
-					updateUserList();
-				})*/
 				
 			})
 
@@ -142,7 +119,7 @@ module.exports = function(server){
 							throw err;
 						}
 						else{
-							callback({"id":data._id})
+							callback({"id":data._id,"username":data.email})
 						}
 						
 					})
@@ -161,36 +138,33 @@ module.exports = function(server){
 					console.log("---")
 					console.log(currentUsers)
 					console.log(data);
-					for(var i=0;i<currentUsers.length;i++){
-						if(currentUsers[i] == data.user){
-							if(currentSockets[i].type == "chatWith"){
-								if(currentSockets[i].chatWith == data.me){
-									currentSockets[i].emit("private-msg",data.msg)
+					if(currentUsers.indexOf(data.user) == -1){
+						new notificationModel({
+							notification 	: "You have a new message from " + data.me,
+							userId 			: found.id
+						}).save(function(err){
+							if(err)
+								throw err;
+						})
+					}
+					else{
+						for(var i=0;i<currentUsers.length;i++){
+							if(currentUsers[i] == data.user){
+								if(currentSockets[i].type == "chatWith"){
+									if(currentSockets[i].chatWith == data.me){
+										currentSockets[i].emit("private-msg",data.msg)
+									}
+									else{
+										currentSockets[i].emit("alert msg",data.me)
+									}
 								}
 								else{
 									currentSockets[i].emit("alert msg",data.me)
 								}
 							}
-							else{
-								currentSockets[i].emit("alert msg",data.me)
-							}
-							/*currentSockets[i].emit('private-msg',data.msg);
-							console.log("hiiii");*/
 						}
 					}
 				})
-				/*new messageModel({
-					message : data.msg,
-					senderId : data.meId,
-					recvId : data.chatWith
-				}).save(function(err){
-					if(err)
-						throw err;
-				})*/
-				
-				
-
-			//}
 		})
 
 		socket.on('disconnect',function(data){

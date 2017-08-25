@@ -51,8 +51,12 @@
 			for(var i=0;i<data.length;i++){
 				if(data[i].senderId == "<%=user._id%>"){
 					$left.append("<div class='chat_message_wrapper' id='left'><div class='chat_user_avatar'><img src='http://www.webncc.in/images/gurdeeposahan.jpg' class='md-user-image'></div><ul class='chat_message'><li><p>" + data[i].message + "</p></ul></div>")
+					var scroll = document.getElementById("chat");
+					scroll.scrollTop = scroll.scrollHeight;
 				}else{
 					$left.append("<div class='chat_message_wrapper chat_message_right'><div class='chat_user_avatar'><img  src='http://bootsnipp.com/img/avatars/bcf1c0d13e5500875fdd5a7e8ad9752ee16e7462.jpg' class='md-user-image'></div><ul class='chat_message' id='right'><li><p>"+ data[i].message +"<span class='chat_message_time'>13:34</span></p></li></ul></div>")
+					var scroll = document.getElementById("chat");
+					scroll.scrollTop = scroll.scrollHeight;
 					
 				}
 			}
