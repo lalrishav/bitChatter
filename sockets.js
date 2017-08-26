@@ -3,28 +3,51 @@ var messageModel = mongoose.model('Message');
 const async = require('async')
 var userModel = mongoose.model("User");
 var notificationModel = mongoose.model("Notification")
+
 module.exports = function(server){
+	/*array to keep track all the connected username*/
 	var currentUsers = [];
+	/*array to keep track of all the connected sockets*/
 	var currentSockets = []
 	const io = require('socket.io').listen(server)
+
 	function updateUserList(){
-		//console.log(currentUsers);
 		io.sockets.emit('usernames',currentUsers);
 	}
+	
 	io.sockets.on('connection',function(socket){
 		socket.on("new user home",function(data,callback){
 				
 				callback(true);
-				socket.user = data;
+				socket.user = data.user;
 				socket.type = "home"
 				currentUsers.push(socket.user);
 				currentSockets.push(socket);
-				console.log(currentUsers)
 				updateUserList();
+				userId = data.id;
+				var items = [notificationModel]
+				async.each(items,function(item,callback){
+					item.find({"userId":userId},function(err,data){
+						if(err)
+							throw err
+						else{
+							console.log(data)
+							callback(data);
+						}
+					})
+				},function(found){
+					for(var i=0;i<currentUsers.length;i++){
+						if(currentUsers[i] == data.user){
+							if(currentSockets[i].type == "home"){
+								currentSockets[i].emit("notification",found);
+							}
+						}
+					}
+					
+				})
 			})
 
 		socket.on("new user chatWith",function(data,callback){
-				console.log("data user is " + data.user)
 				callback(true)
 				var items = [userModel]
 				async.each(items,function(item,callback){
@@ -32,7 +55,6 @@ module.exports = function(server){
 						if(err)
 							throw err
 						else{
-							console.log(data)
 							callback({"recvId":data._id})
 						}
 					})
@@ -50,7 +72,6 @@ module.exports = function(server){
 							if(err)
 								throw err
 							else{
-								console.log(data)
 								callback({"msg":data})
 							}
 						})
@@ -66,9 +87,6 @@ module.exports = function(server){
 							}
 						})*/
 					},function(found){
-						console.log("--------------------------------")
-						console.log(found)
-						console.log("successfull callback")
 						var prevMsg = found.msg;
 						//emit the socket for this user
 						socket.user = data.user;
@@ -76,17 +94,14 @@ module.exports = function(server){
 						socket.chatWith = data.chatWith;
 						currentUsers.push(socket.user);
 						currentSockets.push(socket);
-						console.log(currentUsers)
 						updateUserList();
 						for(var i=0;i<currentUsers.length;i++){
 							if(currentUsers[i] == data.user){
 								if(currentSockets[i].type == "chatWith"){
 									if(currentSockets[i].chatWith == data.chatWith){
-										console.log("prev msg diplayed")
 										currentSockets[i].emit("prev private-msg",found.msg)
 									}
 									else{
-										console.log("ss")
 									}
 								}
 								else{
@@ -112,8 +127,6 @@ module.exports = function(server){
 				
 				var items = [userModel]
 				async.each(items,function(item,callback){
-					console.log("----")
-					console.log(data.user)
 					item.findOne({"email":data.user},function(err,data){
 						if(err){
 							throw err;
@@ -124,7 +137,6 @@ module.exports = function(server){
 						
 					})
 				},function(found){
-					console.log(found);
 					new messageModel({
 						message : data.msg,
 						senderId : data.meId,
@@ -132,12 +144,10 @@ module.exports = function(server){
 					}).save(function(err){
 						if(err)
 							throw err;
-						else
-							console.log("inserted successfully")
+						else{
+
+						}
 					})
-					console.log("---")
-					console.log(currentUsers)
-					console.log(data);
 					if(currentUsers.indexOf(data.user) == -1){
 						new notificationModel({
 							notification 	: "You have a new message from " + data.me,
@@ -168,7 +178,6 @@ module.exports = function(server){
 		})
 
 		socket.on('disconnect',function(data){
-			console.log("disconnecting.........")
 			if(!socket.user)
 				return
 			//console.log(socket)

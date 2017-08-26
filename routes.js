@@ -47,7 +47,7 @@ module.exports = function(app,passport){
 	})
 	app.get('/home',isLoggedIn,function(req,res){
 		let pageInfo = {};
-		pageInfo.user = req.user.email;
+		pageInfo.user = req.user;
 		res.render("dashboard",pageInfo)
 	})
 	app.post('/login',passport.authenticate('local-login',{
