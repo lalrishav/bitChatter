@@ -58,4 +58,16 @@ module.exports = function(app,passport){
 	app.get('/auth',function(req,res){
 		console.log(req.flash('errorMessages'))
 	})
+	app.get('/createGroup',isLoggedIn,function(req,res){
+		let pageInfo = {};
+		pageInfo.user = req.user;
+		res.render("createGroup",pageInfo)
+	})
+	app.get('/addUser/:gid',isLoggedIn,function(req,res){
+		var gid = req.params.gid;
+		var pageInfo = {}
+		pageInfo.gid = gid;
+		pageInfo.user = req.user
+		res.render("addUser",pageInfo)
+	})
 }

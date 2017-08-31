@@ -3,6 +3,7 @@ var messageModel = mongoose.model('Message');
 const async = require('async')
 var userModel = mongoose.model("User");
 var notificationModel = mongoose.model("Notification")
+var groupModel = mongoose.model("Group")
 
 module.exports = function(server){
 	/*array to keep track all the connected username*/
@@ -189,6 +190,42 @@ module.exports = function(server){
 			//currentSockets.splice(currentUsers.indexOf(socket.user),1)
 			updateUserList();
 
+		})
+		socket.on('createGroup',function(data){
+			new groupModel({
+				"groupName" 	: data.groupName,
+				"admins"		: data.user,
+			}).save((err)=>{
+				if(err)
+					throw err
+				else{
+					console.log("group created successfully")
+				}
+			})
+		})
+
+		socket.on("add user",function(data){
+			console.log("===================")
+			console.log(data)
+			var items = [userModel]
+			async.each(items,function(item,callback){
+				item.findOne({"email":data.user},function(err,datas){
+					if(err)
+						throw err
+					else{
+						console.log(datas)
+						callback({"userId":datas._id})
+					}
+				})
+			},function(found){
+				groupModel.findOneAndUpdate({"_id":data.gid},{$push:{users:found.userId}},function(err,data){
+					if(err)
+						throw err
+					else{
+						console.log("updated")
+					}
+				})
+			})
 		})
 	})
 }

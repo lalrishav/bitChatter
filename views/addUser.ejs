@@ -1,0 +1,26 @@
+<% include header.ejs %><br>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Add Users</title>
+	<script src="/socket/socket.io-client/dist/socket.io.js"></script>
+	<script type="text/javascript">
+		var socket = io.connect();
+		jQuery(function($){
+			var $add = $('#add')
+			var $username = $('#username')
+			$add.click(function(e){
+				e.preventDefault()
+				socket.emit('add user',{"user":$username.val(),"gid":"<%=gid%>"})
+			})
+		})
+	</script>
+</head>
+<body>
+<br>
+Add user in:-<%=gid%>
+<br>
+<input type="text" id="username">
+<input type="button" id="add">
+</body>
+</html>

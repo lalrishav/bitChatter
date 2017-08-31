@@ -1,0 +1,26 @@
+<% include header.ejs %><br>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Create Your Own Group</title>
+	<script src="/socket/socket.io-client/dist/socket.io.js"></script>
+	<script type="text/javascript">
+		var socket = io.connect();
+		jQuery(function($){
+			$createGroup = $('#createGroup')
+			$groupName = $('#groupName')
+			$createGroup.submit(function(e){
+				e.preventDefault()
+				console.log("jjjj")
+				socket.emit("createGroup",{"groupName":$groupName.val(),"user":"<%=user._id%>"})
+			})
+		})
+	</script>
+</head>
+<body>
+<form id="createGroup">
+	<input type="text" id="groupName"><br><br>
+	<input type="submit" placeholder="enter user name">
+</form>
+</body>
+</html>
