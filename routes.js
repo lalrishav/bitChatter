@@ -61,6 +61,9 @@ module.exports = function(app,passport){
 
 	app.get('/viewGroup',function(req,res){
 		console.log(req.query.group)
+		var json = JSON.parse(req.query.group);
+		console.log(json)
+		console.log(json.groupName)
 	})
 	app.get('/createGroup',isLoggedIn,function(req,res){
 		let pageInfo = {};

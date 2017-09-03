@@ -93,7 +93,8 @@
 				console.log("alert is here");
 			})
 			socket.on('join request',function(data){
-				$('#notificationBar').append("<br>You have new invitation to group " + data.groupName + " <a href='/viewGroup?group="+data+"'>Check out here</a>")
+				s = JSON.stringify(data)
+				$('#notificationBar').append("<br>You have new invitation to group " + data.groupName + " <a href='/viewGroup?group="+s+"'>Check out here</a>")
 			})
 			
 			socket.on('notification',function(data){
