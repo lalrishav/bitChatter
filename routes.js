@@ -58,6 +58,10 @@ module.exports = function(app,passport){
 	app.get('/auth',function(req,res){
 		console.log(req.flash('errorMessages'))
 	})
+
+	app.get('/viewGroup',function(req,res){
+		console.log(req.query.group)
+	})
 	app.get('/createGroup',isLoggedIn,function(req,res){
 		let pageInfo = {};
 		pageInfo.user = req.user;

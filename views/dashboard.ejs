@@ -92,6 +92,9 @@
 			socket.on('alert msg',function(data){
 				console.log("alert is here");
 			})
+			socket.on('join request',function(data){
+				$('#notificationBar').append("<br>You have new invitation to group " + data.groupName + " <a href='/viewGroup?group="+data+"'>Check out here</a>")
+			})
 			
 			socket.on('notification',function(data){
 				var notification = []

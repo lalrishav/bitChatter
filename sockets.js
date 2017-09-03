@@ -4,7 +4,7 @@ const async = require('async')
 var userModel = mongoose.model("User");
 var notificationModel = mongoose.model("Notification")
 var groupModel = mongoose.model("Group")
-
+var joinRequest = mongoose.model("JoinRequest")
 module.exports = function(server){
 	/*array to keep track all the connected username*/
 	var currentUsers = [];
@@ -44,6 +44,33 @@ module.exports = function(server){
 							}
 						}
 					}
+					var items1 = [joinRequest]
+					async.each(items1,function(item1,callback){
+						item1.find({"userId":userId},function(err,datas){
+							if(err)
+								throw err
+							else{}
+						}).populate("gId").exec((err,story)=>{
+							if(err)
+								throw err
+							else{
+								console.log("---------")
+								console.log(story)
+								callback(story[0].gId)
+							}
+						})
+					},function(founds){
+						console.log("i found")
+						//console.log(founds.datas1);
+						for(var i=0;i<currentUsers.length;i++){
+							if(currentUsers[i] == data.user){
+								if(currentSockets[i].type == "home"){
+									currentSockets[i].emit("join request",founds);
+								}
+							}
+						}
+					})
+
 					
 				})
 			})
@@ -203,8 +230,28 @@ module.exports = function(server){
 				}
 			})
 		})
-
-		socket.on("add user",function(data){
+		socket.on("send join request",function(data){
+			var items = [userModel]
+			async.each(items,function(item,callback){
+				item.findOne({"email":data.user},function(err,datas){
+					if(err)
+						throw err
+					else{
+						console.log(datas)
+						callback({"userId":datas._id})
+					}
+				})
+			},function(found){
+				new joinRequest({
+					userId 	: found.userId,
+					gId		: data.gid
+				}).save((err)=>{
+					if(err)
+						throw err;
+				})
+			})
+		})
+		/*socket.on("add user",function(data){
 			console.log("===================")
 			console.log(data)
 			var items = [userModel]
@@ -226,6 +273,6 @@ module.exports = function(server){
 					}
 				})
 			})
-		})
+		})*/
 	})
 }

@@ -11,7 +11,8 @@
 			var $username = $('#username')
 			$add.click(function(e){
 				e.preventDefault()
-				socket.emit('add user',{"user":$username.val(),"gid":"<%=gid%>"})
+				socket.emit('send join request',{"user":$username.val(),"gid":"<%=gid%>","sentBy":"<%= user.email %>"})
+				$username.val('')
 			})
 		})
 	</script>
@@ -21,6 +22,6 @@
 Add user in:-<%=gid%>
 <br>
 <input type="text" id="username">
-<input type="button" id="add">
+<input type="button" id="add" value="send request">
 </body>
 </html>
