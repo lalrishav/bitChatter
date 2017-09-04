@@ -55,6 +55,9 @@ module.exports = function(app,passport){
 		failureRedirect : '/auth',
 		failureFlash : true
 	}))
+	app.get('/index',(req,res)=>{
+		res.render("demo")
+	})
 	app.get('/auth',function(req,res){
 		console.log(req.flash('errorMessages'))
 	})
