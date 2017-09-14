@@ -260,11 +260,11 @@ module.exports = function(server){
 										currentSockets[i].emit("private-msg",data.msg)
 									}
 									else{
-										currentSockets[i].emit("alert msg",data.me)
+										currentSockets[i].emit("alert msg",{"user":data.me,"msg":data.msg})
 									}
 								}
 								else{
-									currentSockets[i].emit("alert msg",data.me)
+									currentSockets[i].emit("alert msg",{"user":data.me,"msg":data.msg})
 								}
 							}
 						}

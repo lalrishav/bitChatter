@@ -6,6 +6,7 @@
     background: transparent; /* make scrollbar transparent */
   }
   </style>
+  <script src="assets/js/jquery.js"></script>
   <script type="text/javascript">
     function emitUser(){
       socket.emit('new user home',{user:"<%= user.email %>",id:"<%= user._id %>"},function(data){
@@ -84,7 +85,13 @@
 
         })
       socket.on('alert msg',function(data){
-        console.log("alert is here");
+        console.log(data)
+        addNotification(data.user,data.msg)
+        
+        /*$(".gritter-title").html("hello")
+        console.log($(".gritter-title"))
+        $("#msgNotification").html("<a id='add-sticky'  href='javascript:;'>gvRG</a>")
+        document.getElementById("add-sticky").click()*/
       })
       socket.on('prev main msg',function(data){
         for(var i=0;i<data.length;i++){
@@ -115,6 +122,7 @@
 <body>
 
   <section id="container" >
+      
       <!-- **********************************************************************************************************************************************************
       TOP BAR CONTENT & NOTIFICATIONS
       *********************************************************************************************************************************************************** -->
@@ -151,6 +159,8 @@
                       <input type="checkbox" id="enter">&nbsp&nbsp<b style="color: black">Send message on enter</b>
                       <input type="submit" value="Send" style="display: none" id="sendbtn">
                     </form>
+                    
+                    <div id="msgNotification"></div>
 
           
                   </div><!-- /col-lg-9 END SECTION MIDDLE -->
@@ -345,6 +355,43 @@
             // (string | optional) the image to display on the left
             image: 'assets/img/ui-sam.jpg',
             // (bool | optional) if you want it to fade out on its own or just sit there
+            sticky: false,
+            // (int | optional) the time you want it to be alive for before fading out
+            time: '3000',
+            // (string | optional) the class name you want to apply to that specific message
+            class_name: 'my-sticky-class'
+        });
+
+        return false;
+        });
+
+        function addNotification(user,msg){
+           var unique_id = $.gritter.add({
+            // (string | mandatory) the heading of the notification
+            title: 'New message from ' + user,
+            // (string | mandatory) the text inside the notification
+            text: msg,
+            // (string | optional) the image to display on the left
+            image: 'assets/img/ui-sam.jpg',
+            // (bool | optional) if you want it to fade out on its own or just sit there
+            sticky: true,
+            // (int | optional) the time you want it to be alive for before fading out
+            time: '',
+            // (string | optional) the class name you want to apply to that specific message
+            class_name: 'my-sticky-class'
+        });
+           return false;
+        }
+
+        $("#gh").click(function(){
+          var unique_id = $.gritter.add({
+            // (string | mandatory) the heading of the notification
+            title: 'Welcome to BitChatter!',
+            // (string | mandatory) the text inside the notification
+            text: 'Welcome to BitChatter.Have a nice time with your friends',
+            // (string | optional) the image to display on the left
+            image: 'assets/img/ui-sam.jpg',
+            // (bool | optional) if you want it to fade out on its own or just sit there
             sticky: true,
             // (int | optional) the time you want it to be alive for before fading out
             time: '',
@@ -353,7 +400,7 @@
         });
 
         return false;
-        });
+        })
   </script>
   
   <script type="application/javascript">

@@ -8,7 +8,7 @@
     <meta name="author" content="Dashboard">
     <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
 
-    <title>DASHGUM - FREE Bootstrap Admin Template</title>
+    <title>BitChatter | Connect talk and Enjoy</title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -24,6 +24,7 @@
     <link href="assets/css/style-responsive.css" rel="stylesheet">
 
     <script src="assets/js/chart-master/Chart.js"></script>
+    <script src="/ajax.js"></script>
     <script src="/socket/socket.io-client/dist/socket.io.js"></script>
     <script type="text/javascript">
     setInterval(function(){
@@ -89,6 +90,7 @@
         socket.on("createGroup ack",function(data){
           $sticky.html("<div id='gritter-notice-wrapper'><div id='gritter-item-5' class='gritter-item-wrapper' style=''><div class='gritter-top'></div><div class='gritter-item'><div class='gritter-close' style='display: block;' onclick='disable()'></div><img src='assets/img/ui-sam.jpg' class='gritter-image'><div class='gritter-with-image'><span class='gritter-title'>"+data+"</div><div style='clear:both'></div></div><div class='gritter-bottom'></div></div></div>")
         })
+        
 
       })
      
