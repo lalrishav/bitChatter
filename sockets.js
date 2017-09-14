@@ -10,6 +10,7 @@ module.exports = function(server){
 	var currentUsers = [];
 	/*array to keep track of all the connected sockets*/
 	var currentSockets = []
+	var mainChatMessage = [];
 	const io = require('socket.io').listen(server)
 
 	function updateUserList(){
@@ -20,6 +21,7 @@ module.exports = function(server){
 		socket.on("new user home",function(data,callback){
 				
 				callback(true);
+				console.log("sent username")
 				socket.user = data.user;
 				socket.type = "home"
 				currentUsers.push(socket.user);
@@ -27,7 +29,9 @@ module.exports = function(server){
 				updateUserList();
 				userId = data.id;
 				var items = [notificationModel]
+				socket.emit("prev main msg",mainChatMessage)
 				async.each(items,function(item,callback){
+					console.log("userid is" + userId)
 					item.find({"userId":userId},function(err,data){
 						if(err)
 							throw err
@@ -39,9 +43,11 @@ module.exports = function(server){
 				},function(found){
 					for(var i=0;i<currentUsers.length;i++){
 						if(currentUsers[i] == data.user){
-							if(currentSockets[i].type == "home"){
+							console.log("---------------------");
+							console.log("@@@@@@@@@@@@@@@@@@@@@");
+							//if(currentSockets[i].type == "home"){
 								currentSockets[i].emit("notification",found);
-							}
+							
 						}
 					}
 					var items1 = [joinRequest]
@@ -56,7 +62,10 @@ module.exports = function(server){
 							else{
 								console.log("---------")
 								console.log(story)
-								callback(story[0].gId)
+								if(story.length > 0)
+									callback(story[0].gid)
+								else
+									callback("not found")
 							}
 						})
 					},function(founds){
@@ -74,6 +83,8 @@ module.exports = function(server){
 					
 				})
 			})
+
+
 
 		socket.on("new user chatWith",function(data,callback){
 				callback(true)
@@ -139,6 +150,60 @@ module.exports = function(server){
 								console.log("hiiii");*/
 							}
 						}
+				userId = data.userId;
+				console.log("user id is " + data.id)
+				var itemsss = [notificationModel]
+				async.each(itemsss,function(item,callback){
+					item.find({"userId":userId},function(err,data){
+						if(err)
+							throw err
+						else{
+							console.log(data)
+							callback(data);
+						}
+					})
+				},function(found){
+					for(var i=0;i<currentUsers.length;i++){
+						if(currentUsers[i] == data.user){
+							console.log("-------++--------------");
+							console.log("@@@@@@++@@@@@@@@@@@@@@@");
+							//if(currentSockets[i].type == "home"){
+								currentSockets[i].emit("notification",found);
+							
+						}
+					}
+					var items1 = [joinRequest]
+					async.each(items1,function(item1,callback){
+						item1.find({"userId":userId},function(err,datas){
+							if(err)
+								throw err
+							else{}
+						}).populate("gId").exec((err,story)=>{
+							if(err)
+								throw err
+							else{
+								console.log("---------")
+								console.log(story)
+								if(story.length > 0)
+									callback(story[0].gid)
+								else
+									callback("not found")
+							}
+						})
+					},function(founds){
+						console.log("i found")
+						//console.log(founds.datas1);
+						for(var i=0;i<currentUsers.length;i++){
+							if(currentUsers[i] == data.user){
+								//if(currentSockets[i].type == "home"){
+									currentSockets[i].emit("join request",founds);
+								//}
+							}
+						}
+					})
+
+					
+				})
 					})
 				})
 				
@@ -146,7 +211,9 @@ module.exports = function(server){
 
 		socket.on('send-msg',function(data){
 			//io.sockets.emit('new msg',{msg:data,user:socket.user});
+			mainChatMessage.push({"user":socket.user,"msg":data});
 			socket.broadcast.emit('new msg',{msg:data,user:socket.user})
+
 		})
 
 		socket.on('private-data',function(data){
@@ -178,7 +245,7 @@ module.exports = function(server){
 					})
 					if(currentUsers.indexOf(data.user) == -1){
 						new notificationModel({
-							notification 	: "You have a new message from " + data.me,
+							notification 	: data.me,
 							userId 			: found.id
 						}).save(function(err){
 							if(err)
@@ -202,9 +269,26 @@ module.exports = function(server){
 							}
 						}
 					}
+
 				})
 		})
+		socket.on("delete notification",function(data){
+			var items = [notificationModel]
 
+			async.each(items,function(item,callback){
+				item.update({"userId":data},{"isActive":false},{multi:true},function(err){
+					if(err)
+						throw err;
+					else{
+						console.log("successfully updated")
+					}
+				})
+				/*item.find({"userId":data}).remove().exec(function(err){
+					if(err)
+						throw err;
+				})*/
+			})
+		})
 		socket.on('disconnect',function(data){
 			if(!socket.user)
 				return
@@ -226,6 +310,7 @@ module.exports = function(server){
 				if(err)
 					throw err
 				else{
+					socket.emit("createGroup ack","Group Created Successfully");
 					console.log("group created successfully")
 				}
 			})

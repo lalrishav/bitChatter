@@ -9,7 +9,8 @@
 		jQuery(function($){
 			$createGroup = $('#createGroup')
 			$groupName = $('#groupName')
-			$createGroup.submit(function(e){
+			$createGroup.click(function(e){
+				
 				e.preventDefault()
 				console.log("jjjj")
 				socket.emit("createGroup",{"groupName":$groupName.val(),"user":"<%=user._id%>"})

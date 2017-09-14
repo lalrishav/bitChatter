@@ -22,6 +22,7 @@ module.exports = function(app,passport){
 	})*/
 
 	app.get('/register',function(req,res){
+		console.log("register")
 		if(req.isAuthenticated())
 			res.redirect('/home');
 		else 
@@ -29,7 +30,7 @@ module.exports = function(app,passport){
 	})
 
 	app.post('/register',passport.authenticate('local-signup',{
-		successRedirect :  '/dashfboghard',
+		successRedirect :  '/',
 		failureRedirect :  '/auth',
  	}))
 
@@ -79,5 +80,11 @@ module.exports = function(app,passport){
 		pageInfo.gid = gid;
 		pageInfo.user = req.user
 		res.render("addUser",pageInfo)
+	})
+	app.get('/checkAuthentication',function(req,res){
+		if(!req.isAuthenticated())
+			res.send('false')
+		else
+			res.send("true")
 	})
 }
