@@ -4,7 +4,11 @@
   "description": "Chat room",
   "main": "app.js",
   "scripts": {
-    "test": "node app.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" :"node app.js"
+  },
+  "engines" : {
+    "node" : "6.11.2"  
   },
   "repository": {
     "type": "git",
