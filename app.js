@@ -6,7 +6,7 @@ const passport = require('passport');
 const fs = require("fs")
 const flash = require('connect-flash');
 var mongoose = require("mongoose")
-mongoose.connect(process.env.MONGOLAB_URI|| "mongodb://localhost:27017/bitChatter" )
+//mongoose.connect(process.env.MONGOLAB_URI|| "mongodb://localhost:27017/bitChatter" )
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname,'views'));
 app.use(express.static(path.join(__dirname, 'public')));
