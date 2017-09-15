@@ -89,6 +89,7 @@ module.exports = function(server){
 		socket.on("new user chatWith",function(data,callback){
 				callback(true)
 				var items = [userModel]
+				socket.emit("prev main msg",mainChatMessage)
 				async.each(items,function(item,callback){
 					item.findOne({"email":data.chatWith},function(err,data){
 						if(err)

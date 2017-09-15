@@ -83,6 +83,67 @@
 				}
 			}
 		})
+		$configure = $("#configure")
+		$raw_msg_box = $("#raw_msg_box")
+		$rawMsg = $('#rawMsg')
+		socket.on('prev main msg',function(data){
+	        for(var i=0;i<data.length;i++){
+	          $configure.append("<a id='remove-all' class='btn btn-danger  btn-sm' style='border-radius:35%'>"+ data[i].user +"</a>&nbsp&nbsp<b>"+data[i].msg+"</b><br><br>")
+	        }
+	        var scroll = document.getElementById("configure");
+	        scroll.scrollTop = scroll.scrollHeight;
+	    })
+	    socket.on('new msg',function(data){
+	        $configure.append("<a id='remove-all' class='btn btn-danger  btn-sm' style='border-radius:35%'>"+data.user+"</a>&nbsp&nbsp<b>"+data.msg+"</b><br><br>")
+	        var scroll = document.getElementById("configure");
+	        scroll.scrollTop = scroll.scrollHeight;
+	          
+	    })
+
+	    $raw_msg_box.keypress(function (e) {
+	        var key = e.which;
+	        if(key == 13 ){
+	          if(document.getElementById("enter").checked == true){
+	            if($raw_msg_box.val()!='' && $raw_msg_box.val()!='@clear'){
+	              $configure.append("<a id='remove-all' class='btn btn-danger  btn-sm' style='border-radius:35%'>"+ "You" +"</a>&nbsp&nbsp<b>"+$raw_msg_box.val()+"</b><br><br>")
+	              var scroll = document.getElementById("configure");
+	              scroll.scrollTop = scroll.scrollHeight;
+	              socket.emit('send-msg',$raw_msg_box.val());
+	              $raw_msg_box.val('')
+	            }
+	            else if($raw_msg_box.val()=='@clear'){
+	              document.getElementById("configure").innerHTML = ""
+	              $raw_msg_box.val('')
+	            }
+	          }
+
+	        }
+	        
+	        }); 
+
+	      $rawMsg.submit(function(e){
+	        e.preventDefault();
+	        if($raw_msg_box.val()!='' && $raw_msg_box.val()!='@clear'){
+	          /*$configure.append("<span style='color:blue'>You"  + ":-" + "</span>" + "<span style='color:lightgreen'>" + $raw_msg_box.val() + "</span>" + "<br>")*/
+	          $configure.append("<a id='remove-all' class='btn btn-danger  btn-sm' style='border-radius:35%'>"+ "You" +"</a>&nbsp&nbsp<b>"+$raw_msg_box.val()+"</b><br><br>")
+	          var scroll = document.getElementById("configure");
+	          scroll.scrollTop = scroll.scrollHeight;
+	          socket.emit('send-msg',$raw_msg_box.val());
+	          $raw_msg_box.val('')
+	        }
+	        else if($raw_msg_box.val()=='@clear'){
+	          document.getElementById("configure").innerHTML = ""
+	            $raw_msg_box.val('')
+	        }
+	      })
+	      setInterval(function(){
+	        if($raw_msg_box.val()!=''){
+	          document.getElementById("sendbtn").style.display = "block";
+	        }
+	        else{
+	          document.getElementById("sendbtn").style.display = "none";
+	        }
+	      },1);
 	})
 </script>
 <body onload="emitUser()">
